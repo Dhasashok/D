@@ -1,0 +1,30 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct Patient {
+    string name;
+    int priority;
+
+    Patient(string n, int p) : name(n), priority(p) {}
+};
+
+int main() {
+    vector<Patient> patients;
+
+    patients.push_back(Patient("Ashok", 3));
+    patients.push_back(Patient("Ram", 2));
+    patients.push_back(Patient("Sagar", 1));
+
+    sort(patients.begin(), patients.end(), [](const Patient& p1, const Patient& p2) {
+        return p1.priority < p2.priority;
+    });
+
+    for (const Patient& p : patients) {
+        cout << "Treating patient: " << p.name << " (Priority: " << p.priority << ")" << endl;
+    }
+
+    return 0;
+}
