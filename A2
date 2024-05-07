@@ -1,0 +1,125 @@
+#include <iostream>
+#include <string>
+#include <list>
+#include <vector>
+
+using namespace std;
+
+class Dictionary {
+private:
+    struct KeyValuePair {
+        string key;
+        string value;
+    };
+
+    vector<list<KeyValuePair>> table;
+    int size;
+    int capacity;
+
+    int hash(const string& key) {
+        int sum = 0;
+        for (char c : key) {
+            sum += c;
+        }
+        return sum % capacity;
+    }
+
+public:
+    Dictionary(int capacity) : size(0), capacity(capacity) {
+        table.resize(capacity);
+    }
+
+    ~Dictionary() {
+        table.clear();
+    }
+
+    void insert(const string& key, const string& value) {
+        int index = hash(key);
+        for (auto& pair : table[index]) {
+            if (pair.key == key) {
+                pair.value = value;
+                return;
+            }
+        }
+        KeyValuePair newPair = {key, value};
+        table[index].push_back(newPair);
+        size++;
+    }
+
+    string find(const string& key) {
+        int index = hash(key);
+        for (auto& pair : table[index]) {
+            if (pair.key == key) {
+                return pair.value;
+            }
+        }
+        return "Key not found";
+    }
+
+    void remove(const string& key) {
+        int index = hash(key);
+        auto& bucket = table[index];
+        for (auto it = bucket.begin(); it != bucket.end(); ++it) {
+            if (it->key == key) {
+                bucket.erase(it);
+                size--;
+                return;
+            }
+        }
+    }
+
+    void display() {
+        for (int i = 0; i < capacity; ++i) {
+            cout << "[" << i << "]: ";
+            for (auto& pair : table[i]) {
+                cout << "(" << pair.key << ", " << pair.value << ") ";
+            }
+            cout << endl;
+        }
+    }
+};
+
+int main() {
+    Dictionary dict(10);
+    int choice;
+    string key, value;
+
+    do {
+        cout << "\nMenu:\n1. Insert Key-Value Pair\n2. Find Value by Key\n3. Delete Key-Value Pair\n4. Display Dictionary\n5. Exit\nEnter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter key: ";
+                cin >> key;
+                cout << "Enter value: ";
+                cin >> value;
+                dict.insert(key, value);
+                cout << "Key-Value pair inserted successfully!" ;
+                break;
+            case 2:
+                cout << "Enter key to find: ";
+                cin >> key;
+                value = dict.find(key);
+                cout << "Value corresponding to key '" << key << "': " << value ;
+                break;
+            case 3:
+                cout << "Enter key to delete: ";
+                cin >> key;
+                dict.remove(key);
+                cout << "Key-Value pair deleted successfully!"; 
+                break;
+            case 4:
+                cout << "Dictionary Contents:" ;
+                dict.display();
+                break;
+            case 5:
+                cout << "Exiting program...";
+                break;
+            default:
+                cout << "Invalid choice! Please enter a number between 1 and 5." ;
+        }
+    } while (choice != 5);
+
+    return 0;
+}
